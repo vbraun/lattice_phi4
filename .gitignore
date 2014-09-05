@@ -1,0 +1,11 @@
+\**
+.#*
+\#*
+*~
+*.o
+*.gch
+Simulation
+gmon.out
+*.d
+phi4.cpp
+*.so
