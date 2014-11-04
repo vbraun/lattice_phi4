@@ -2,6 +2,8 @@ import math
 
 include "phi4.pxi"
 
+from sage.rings.real_double import RDF
+
 
 # TODO
 def cached_method(x):
@@ -175,8 +177,47 @@ cdef class Simulation(object):
         """
         self.lattice = new CppLattice(mass_squared, coupling_constant, n_x, n_y)
         self.lattice.randomize(random_seed)
-        self.lattice.equilibrate(1000)
+        self.lattice.equilibrate(equilibrate)
         self.sim = new CppSimulation(self.lattice[0])
+
+    def randomize(self, random_seed=0):
+        """
+        Randomize the discretized field
+        
+        This method is only for educational purposes. Randomization is
+        automatically done at initialization.
+        """
+        self.lattice.randomize(random_seed)
+    
+    def current_energy(self):
+        """
+        Return the energy of the current field configuration.
+
+        This method is only for educational purposes. Use
+        :meth:`energy` to get an observable that keeps track of the
+        simulation run.
+        """
+        return RDF(self.lattice.total_energy())
+
+    def current_average_phi(self):
+        """
+        Return the average field of the current configuration
+
+        This method is only for educational purposes. Use
+        :meth:`phi` to get an observable that keeps track of the
+        simulation run.
+        """
+        return RDF(self.lattice.average_phi())
+
+    def current_average_abs_phi(self):
+        """
+        Return the average abs(field) of the current configuration
+
+        This method is only for educational purposes. Use
+        :meth:`abs_phi` to get an observable that keeps track of the
+        simulation run.
+        """
+        return RDF(self.lattice.average_abs_phi())
         
     def run(self, iterations=16384):
         """
@@ -201,7 +242,7 @@ cdef class Simulation(object):
 
     def energy(self):
         return wrap_Observable(self.sim.get_energy())
-    
+
     def autocorrelation_time(self):
         correlation = self.abs_phi().autocorrelation()
         if len(correlation) == 1:
@@ -216,7 +257,6 @@ cdef class Simulation(object):
         Return the final field configuration as matrix.
         """
         Nx, Ny = self.shape()
-        from sage.rings.real_double import RDF
         from sage.matrix.constructor import matrix
         return matrix(RDF, Nx, Ny, self.lattice.get_phi())
         

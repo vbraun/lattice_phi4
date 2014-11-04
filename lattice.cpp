@@ -252,3 +252,11 @@ Lattice::RR Lattice::average_phi() const
     sum += *phi_iter;
   return sum / size;
 }
+
+Lattice::RR Lattice::average_abs_phi() const
+{
+  RR sum = 0;
+  for (const_phi_iterator phi_iter = begin_phi(); phi_iter != end_phi(); phi_iter++)
+    sum += abs(*phi_iter);
+  return sum / size;
+}

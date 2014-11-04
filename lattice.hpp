@@ -193,6 +193,7 @@ public:
 
   RR total_energy() const;
   RR average_phi() const;   
+  RR average_abs_phi() const;   
 };
 
 

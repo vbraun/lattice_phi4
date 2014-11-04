@@ -13,6 +13,9 @@ cdef extern from 'lattice.hpp':
         void equilibrate(int iterations)
         int Nx, Ny
         vector[double] get_phi()
+        double total_energy()
+        double average_phi()
+        double average_abs_phi()
 
 cdef extern from 'simulation.hpp':
 
@@ -32,7 +35,7 @@ cdef extern from 'simulation.hpp':
         CppObservable get_phi()
         CppObservable get_abs_phi()
         CppObservable get_energy()
-        
+
 
 
 
