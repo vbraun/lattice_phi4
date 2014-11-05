@@ -1,25 +1,20 @@
 
-
 from sage.all_cmdline import *
 
-from phi4 import Simulation, Observable
+from phi4 import Simulation
 
 
-class PhasePlot(object):
+
+
+class ConstantLambdaPlot(object):
     
-    def __init__(self, Nx, Ny,
-                 equilibrate=4096, iterations=4096,
-                 mass_squared=None,
-                 coupling_constant=None,
-                 color='blue',
-                 observable=None):
+    def __init__(self, Nx, Ny, equilibrate=4096, iterations=4096, observable=None):
         self._Nx = Nx
         self._Ny = Ny
         self._equilibrate = equilibrate
         self._iterations = iterations
-        if mass_squared is not None:
-            self.mass_squared = -1.26
-            self.mass_squared = mass_squared
+        self._mu2 = -1.26
+        self._mu2_is_range = False
         self._lambda = 1.0
         self._lambda_is_range = False
         if observable is None:
@@ -29,7 +24,7 @@ class PhasePlot(object):
         self._title = r'Lattice simulation of $\phi^4$ theory in 2d'
         self._legend = None
         self._observable = None
-        self._color = color
+        self._color = 'blue'
 
     @property
     def mass_squared(self):
@@ -62,11 +57,7 @@ class PhasePlot(object):
         sim = Simulation(mass_squared, coupling_constant, 
                          self._Nx, self._Ny, equilibrate=self._equilibrate)
         sim.run(self._iterations)
-        result = self._obs(sim)
-        if isinstance(result, Observable):
-            return result.average()
-        else:
-            return result
+        return self._obs(sim)
 
     def _parallel_eval(self, points):
         args = [((mass_squared, coupling_constant), dict(axis=axis))
@@ -78,11 +69,9 @@ class PhasePlot(object):
 
     def plot(self, *args, **kwds):
         if not(self._mu2_is_range or self._lambda_is_range):
-            s =  'Plotting requires a range for mass_squared and/or coupling_constant. '
+            s =  'Plotting requires a range for mass_squared and/or coupling_constant.'
             value = self._eval(self._mu2, self._lambda)
             s += 'Value of observable at single point is ' + str(value)
-            print s
-            return
         elif not self._mu2_is_range:
             return self._plot_lambda(*args, **kwds)
         elif not self._lambda_is_range:
@@ -212,4 +201,3 @@ class PhasePlot(object):
         for i_m, i_l, obs in result:
             m[i_m, i_l] = obs
         return list_plot3d(m)
-
